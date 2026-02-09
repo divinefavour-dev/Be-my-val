@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine? 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffc3a0 0%, #ffafbd 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 80px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .bear {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .bear img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 40px;
+            font-weight: normal;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 80px;
+        }
+
+        .yes-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+        }
+
+        .yes-btn:hover {
+            background: #ff3838;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6);
+        }
+
+        .no-btn {
+            background: white;
+            color: #666;
+            border: 2px solid #ddd;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .no-btn:hover {
+            background: #f8f8f8;
+        }
+
+        .celebration {
+            display: none;
+            font-size: 24px;
+            color: #ff4757;
+            margin-top: 30px;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            animation: fall 4s linear forwards;
+            opacity: 0;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 1;
+                transform: translateY(-50px) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .note {
+            margin-top: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Music - Note: You'll need to download the audio file and replace the src -->
+    <!-- YouTube links don't work directly in audio tags. Download the song and host it, or use a different audio source -->
+    <audio id="bgMusic" autoplay loop style="display: none;">
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div class="hearts" id="hearts"></div>
+    
+    <div class="container">
+        <div class="bear">
+            <img id="bearImage" src="love_cat.png" alt="Love">
+        </div>
+        <div style="font-size: 18px; color: #ff4757; margin-bottom: 10px; font-weight: 600;">Queen Favour</div>
+        <h1>Hey Future Wifey, Will you be my valentine?</h1>
+        
+        <div class="buttons">
+            <button class="yes-btn" onclick="sayYes()">Yes</button>
+            <button class="no-btn" id="noBtn" onmouseover="runAway()" onclick="runAway()">No</button>
+        </div>
+        
+        <div class="celebration" id="celebration">
+            🎉 Yay! I love you so much! 💕
+        </div>
+        
+        <div class="note">Try clicking "No" if you dare... 😏</div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const bgMusic = document.getElementById('bgMusic');
+        let runCount = 0;
+
+        // Try to play music on page load
+        window.addEventListener('load', function() {
+            bgMusic.play().catch(function(error) {
+                console.log('Autoplay prevented. Music will start on first interaction.');
+            });
+        });
+
+        // Ensure music plays on any user interaction if autoplay was blocked
+        document.addEventListener('click', function playOnInteraction() {
+            bgMusic.play().catch(function(error) {
+                console.log('Could not play audio');
+            });
+            document.removeEventListener('click', playOnInteraction);
+        }, { once: true });
+
+        function runAway() {
+            runCount++;
+            
+            // Get button and container dimensions
+            const btnRect = noBtn.getBoundingClientRect();
+            const containerRect = document.querySelector('.buttons').getBoundingClientRect();
+            
+            // Calculate random position within viewport
+            const maxX = window.innerWidth - btnRect.width - 40;
+            const maxY = window.innerHeight - btnRect.height - 40;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            // Position the button absolutely on the page
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.transform = 'none';
+            
+            // Make the button smaller and change text after attempts
+
+            if (runCount > 2) {
+                noBtn.textContent = 'NO? 😏';
+            }
+            
+            if (runCount > 4) {
+                noBtn.textContent = 'Please Mummy!! 😪';
+            }
+            
+            if (runCount > 6) {
+                noBtn.textContent = "I'll buy you what ever you want 😎";
+            }
+            if (runCount > 8) {
+                noBtn.textContent = "If I catch you eh!! 🧐";
+            }
+            if (runCount > 10) {
+                noBtn.textContent = "Come to Daddy, Beautiful Mummy 😘";
+            }
+        }
+
+        function sayYes() {
+            document.querySelector('.buttons').style.display = 'none';
+            document.querySelector('.note').style.display = 'none';
+            document.getElementById('celebration').style.display = 'block';
+            
+            // Change the image to love.gif
+            const bearImage = document.getElementById('bearImage');
+            bearImage.src = 'love.gif';
+            bearImage.style.transform = 'scale(1.1)';
+            
+            // Create falling hearts
+            createHearts();
+        }
+
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const heartSymbols = ['❤️', '💕', '💖', '💗', '💝'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 4000);
+                }, i * 100);
+            }
+        }
+
+        // Add touch support for mobile
+        noBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            runAway();
+        });
+    </script>
+</body>
+</html>
